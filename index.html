@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milestone Student Living Equipment Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Milestone Student Living Equipment Tracker</h1>
+    </header>
+    <main>
+        <section id="equipment-list">
+            <h2>Available Equipment</h2>
+            <ul id="available-equipment"></ul>
+        </section>
+        <section id="checkout-form">
+            <h2>Check Out / Check In Equipment</h2>
+            <form id="equipmentForm">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="room">Room Number:</label>
+                <input type="text" id="room" name="room" required>
+
+                <label for="equipment">Equipment:</label>
+                <select id="equipment" name="equipment" required>
+                    <option value="vacuum">Vacuum Cleaner</option>
+                    <option value="dryer">Air Dryer</option>
+                    <option value="iron">Iron</option>
+                    <option value="mop">Mop</option>
+                </select>
+
+                <button type="submit" id="checkoutBtn">Check Out</button>
+                <button type="button" id="checkinBtn">Check In</button>
+            </form>
+        </section>
+        <section id="current-checkout">
+            <h2>Currently Checked Out Equipment</h2>
+            <ul id="current-equipments"></ul>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
