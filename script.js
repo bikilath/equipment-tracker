@@ -1,79 +1,85 @@
-// Sample equipment data
-let equipmentData = [
-    { name: "Vacuum Cleaner", status: "available", user: "", room: "" },
-    { name: "Air Dryer", status: "available", user: "", room: "" },
-    { name: "Iron", status: "available", user: "", room: "" },
-    { name: "Mop", status: "available", user: "", room: "" }
-];
+document.addEventListener('DOMContentLoaded', () => {
+    const availableEquipment = document.getElementById('available-equipment');
+    const currentEquipment = document.getElementById('current-equipments');
+    const equipmentForm = document.getElementById('equipmentForm');
+    const checkinBtn = document.getElementById('checkinBtn');
 
-// Initialize the application
-document.addEventListener("DOMContentLoaded", () => {
-    displayAvailableEquipment();
-    document.getElementById('equipmentForm').addEventListener('submit', handleCheckOut);
-    document.getElementById('checkinBtn').addEventListener('click', handleCheckIn);
+    let equipmentList = JSON.parse(localStorage.getItem('equipmentList')) || ['Vacuum Cleaner', 'Air Dryer', 'Iron', 'Mop'];
+    let takenEquipment = JSON.parse(localStorage.getItem('takenEquipment')) || [];
+
+    // Save to local storage
+    function saveToLocalStorage() {
+        localStorage.setItem('equipmentList', JSON.stringify(equipmentList));
+        localStorage.setItem('takenEquipment', JSON.stringify(takenEquipment));
+    }
+
+    // Render initial available equipment list
+    function renderAvailableEquipment() {
+        availableEquipment.innerHTML = '';
+        equipmentList.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            availableEquipment.appendChild(li);
+        });
+    }
+
+    // Render current taken equipment list
+    function renderTakenEquipment() {
+        currentEquipment.innerHTML = '';
+        takenEquipment.forEach(entry => {
+            const li = document.createElement('li');
+            li.textContent = `${entry.equipment} - Taken by ${entry.name} (Room ${entry.room}) on ${entry.takenTimestamp}`;
+            if (entry.returnedTimestamp) {
+                li.textContent += ` - Returned on ${entry.returnedTimestamp}`;
+            }
+            currentEquipment.appendChild(li);
+        });
+    }
+
+    // Handle taking equipment
+    equipmentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = event.target.name.value;
+        const room = event.target.room.value;
+        const equipment = event.target.equipment.value;
+        const takenTimestamp = new Date().toLocaleString();
+
+        const equipmentIndex = equipmentList.findIndex(item => item.toLowerCase() === equipment.toLowerCase());
+        if (equipmentIndex > -1) {
+            equipmentList.splice(equipmentIndex, 1);
+            takenEquipment.push({ name, room, equipment, takenTimestamp, returnedTimestamp: null });
+            saveToLocalStorage();
+            renderAvailableEquipment();
+            renderTakenEquipment();
+            equipmentForm.reset();
+        } else {
+            alert('Equipment not available for taking');
+        }
+    });
+
+    // Handle returning equipment
+    checkinBtn.addEventListener('click', () => {
+        const name = equipmentForm.name.value;
+        const room = equipmentForm.room.value;
+        const equipment = equipmentForm.equipment.value;
+        const returnedTimestamp = new Date().toLocaleString();
+
+        const takenIndex = takenEquipment.findIndex(entry => 
+            entry.name === name && entry.room === room && entry.equipment.toLowerCase() === equipment.toLowerCase() && !entry.returnedTimestamp
+        );
+        if (takenIndex > -1) {
+            takenEquipment[takenIndex].returnedTimestamp = returnedTimestamp;
+            equipmentList.push(equipment);
+            saveToLocalStorage();
+            renderAvailableEquipment();
+            renderTakenEquipment();
+            equipmentForm.reset();
+        } else {
+            alert('No matching taken equipment found or already returned');
+        }
+    });
+
+    // Initial render
+    renderAvailableEquipment();
+    renderTakenEquipment();
 });
-
-// Display available equipment
-function displayAvailableEquipment() {
-    const availableEquipmentList = document.getElementById('available-equipment');
-    availableEquipmentList.innerHTML = '';
-    equipmentData.forEach((equipment) => {
-        if (equipment.status === 'available') {
-            const li = document.createElement('li');
-            li.textContent = equipment.name;
-            availableEquipmentList.appendChild(li);
-        }
-    });
-}
-
-// Handle equipment check out
-function handleCheckOut(event) {
-    event.preventDefault();
-    const name = document.getElementById('name').value;
-    const room = document.getElementById('room').value;
-    const selectedEquipment = document.getElementById('equipment').value;
-
-    const equipment = equipmentData.find(eq => eq.name.toLowerCase().replace(" ", "-") === selectedEquipment);
-    if (equipment && equipment.status === 'available') {
-        equipment.status = 'checked out';
-        equipment.user = name;
-        equipment.room = room;
-        alert(`${name} from room ${room} has checked out the ${equipment.name}`);
-        displayAvailableEquipment();
-        displayCurrentCheckOuts();
-    } else {
-        alert('Selected equipment is not available.');
-    }
-}
-
-// Handle equipment check in
-function handleCheckIn() {
-    const name = document.getElementById('name').value;
-    const room = document.getElementById('room').value;
-    const selectedEquipment = document.getElementById('equipment').value;
-
-    const equipment = equipmentData.find(eq => eq.name.toLowerCase().replace(" ", "-") === selectedEquipment);
-    if (equipment && equipment.status === 'checked out' && equipment.user === name && equipment.room === room) {
-        equipment.status = 'available';
-        equipment.user = '';
-        equipment.room = '';
-        alert(`${name} has checked in the ${equipment.name}`);
-        displayAvailableEquipment();
-        displayCurrentCheckOuts();
-    } else {
-        alert('Check-in action failed. Check your details.');
-    }
-}
-
-// Display currently checked out equipment
-function displayCurrentCheckOuts() {
-    const currentEquipmentsList = document.getElementById('current-equipments');
-    currentEquipmentsList.innerHTML = '';
-    equipmentData.forEach(equipment => {
-        if (equipment.status === 'checked out') {
-            const li = document.createElement('li');
-            li.textContent = `${equipment.name} checked out by ${equipment.user} (Room: ${equipment.room})`;
-            currentEquipmentsList.appendChild(li);
-        }
-    });
-}
