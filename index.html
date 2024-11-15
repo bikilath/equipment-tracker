@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Milestone Student Living Equipment Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
 </head>
 <body>
     <header>
@@ -15,8 +16,8 @@
             <h2>Available Equipment</h2>
             <ul id="available-equipment"></ul>
         </section>
-        <section id="checkout-form">
-            <h2>Check Out / Check In Equipment</h2>
+        <section id="booking-form">
+            <h2>Book / Take / Return Equipment</h2>
             <form id="equipmentForm">
                 <label for="name">Your Name:</label>
                 <input type="text" id="name" name="name" required>
@@ -32,15 +33,28 @@
                     <option value="mop">Mop</option>
                 </select>
 
-                <button type="submit" id="checkoutBtn">Check Out</button>
-                <button type="button" id="checkinBtn">Check In</button>
+                <label for="bookingDate">Booking Date:</label>
+                <input type="date" id="bookingDate" name="bookingDate" required>
+
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+
+                <button type="submit" id="takeBtn">Take</button>
+                <button type="button" id="returnBtn">Return</button>
+                <button type="button" id="bookBtn">Book</button>
             </form>
         </section>
-        <section id="current-checkout">
-            <h2>Currently Checked Out Equipment</h2>
+        <section id="current-taken">
+            <h2>Currently Taken Equipment</h2>
             <ul id="current-equipments"></ul>
         </section>
+        <section id="calendar">
+            <h2>Booking Calendar</h2>
+            <div id="calendar"></div>
+        </section>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
